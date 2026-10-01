@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS engagement_one_like ON engagement(user_id,content_id) WHERE action='like'
