@@ -1,0 +1,8 @@
+import {db} from 'hatchable';
+import {render,esc,card} from 'lib/render.js';
+export const access = 'public';
+export default async function(req,res){const parts=req.params.path||[];const [section,id]=parts;
+if(['course','blog'].includes(section)&&id){const {rows}=await db.query('SELECT id,kind,data FROM content WHERE id=$1 AND published=true',[id]);if(!rows.length)return res.status(404).send(render('Page not found',section+'/'+id,'<h1>Page not found</h1><a href="/courses">Explore courses</a>'));const r=rows[0];const d=r.data;const body='<span class="eyebrow">'+esc(d.category)+'</span><h1>'+esc(d.title)+'</h1><article class="prose">'+(r.kind==='course'?d.lessons.map(l=>'<h2>'+esc(l.title)+'</h2><p>'+esc(l.notes)+'</p>').join(''):esc(d.body).split('\n\n').map(p=>p.startsWith('## ')?'<h2>'+p.slice(3)+'</h2>':p.startsWith('# ')?'':'<p>'+p+'</p>').join(''))+'</article><a class="button" href="/login">Start learning</a>';return res.send(render(d.title,section+'/'+id,body));}
+if(section==='courses'||section==='blog'){const {rows}=await db.query('SELECT id,kind,data FROM content WHERE kind=$1 AND published=true ORDER BY created_at DESC',[section==='courses'?'course':'blog']);return res.send(render(section==='courses'?'Explore free courses':'The learning journal',section,'<h1>'+(section==='courses'?'Skills that open doors.':'Ideas for your next breakthrough.')+'</h1><div class="grid">'+rows.map(card).join('')+'</div>'));}
+return res.send(render('Kiks & Learn',parts.join('/'),'<h1>Everyone Starts Somewhere. Start Here. And it’s free.</h1><a class="button" href="/courses">Explore free courses</a>'));
+}

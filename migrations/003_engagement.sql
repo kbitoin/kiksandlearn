@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS engagement (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id TEXT NOT NULL, content_id TEXT NOT NULL REFERENCES content(id), action TEXT NOT NULL CHECK(action IN ('like','share','comment')), body TEXT NOT NULL DEFAULT '', created_at TIMESTAMPTZ DEFAULT now())

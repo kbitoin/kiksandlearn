@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS learning (user_id TEXT NOT NULL, course_id TEXT NOT NULL REFERENCES content(id), completed JSONB NOT NULL DEFAULT '[]', score INTEGER NOT NULL DEFAULT 0, seconds INTEGER NOT NULL DEFAULT 0, updated_at TIMESTAMPTZ DEFAULT now(), PRIMARY KEY(user_id,course_id))

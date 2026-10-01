@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS content (id TEXT PRIMARY KEY, kind TEXT NOT NULL CHECK(kind IN ('course','blog')), data JSONB NOT NULL, published BOOLEAN NOT NULL DEFAULT false, created_at TIMESTAMPTZ DEFAULT now())

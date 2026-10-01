@@ -1,0 +1,4 @@
+import {db,auth} from 'hatchable';
+export const access = 'user';
+export const methods = ['GET','POST'];
+export default async function(req,res){const u=req.user||await auth.requireUser(req,res);if(!u)return;if(req.method==='GET'){const {rows}=await db.query('SELECT * FROM learner_profile WHERE user_id=$1',[u.id]);return res.json(rows[0]||{});}const {name='',age_band='',country=''}=req.body||{};if(typeof name!=='string'||name.length>100||typeof country!=='string'||country.length>80||!['','Under 18','18–24','25–34','35–44','45–54','55+'].includes(age_band))return res.status(400).json({error:'Invalid profile'});await db.query('INSERT INTO learner_profile(user_id,name,age_band,country) VALUES($1,$2,$3,$4) ON CONFLICT(user_id) DO UPDATE SET name=EXCLUDED.name,age_band=EXCLUDED.age_band,country=EXCLUDED.country',[u.id,name,age_band,country]);res.json({ok:true});}
